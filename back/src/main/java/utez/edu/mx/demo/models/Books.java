@@ -27,6 +27,6 @@ public class Books {
     private String image;
 
     @Column(nullable = false)
-    private Date publication_date;
+    private Date publicationDate;
 
 }

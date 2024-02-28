@@ -62,7 +62,7 @@ public class BookServices {
     @Transactional(readOnly = true)
     public CustomResponse<List<Books>> orderByDateAsc(){
         return new CustomResponse<>(
-                this.orderByDateAsc().getData(),
+                this.repository.findBooksByOrderByPublicationDateAsc(),
                 false,
                 200,
                 "ok"
@@ -72,7 +72,7 @@ public class BookServices {
     @Transactional(readOnly = true)
     public CustomResponse<List<Books>> orderByDateDesc(){
         return new CustomResponse<>(
-                this.repository.findBooksByOrderByPublication_dateDesc(),
+                this.repository.findBooksByOrderByPublicationDateDesc(),
                 false,
                 200,
                 "ok"
