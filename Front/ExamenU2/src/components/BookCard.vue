@@ -20,6 +20,7 @@
       </p>
     </header>
 
+
     <b-container fluid>
       <!-- Carrusel de libros -->
       <b-row>
@@ -46,11 +47,10 @@
           </div>
         </b-col>
       </b-row>
-
       <b-row class="mb-3 mt-5">
         <b-col class=" px-3" cols="12" sm="12" md="2" lg="2" xl="2">
           <label>Ordenado por autor</label>
-          <b-form-select v-model="selectedAutor" class="mb-3 form-control">
+          <b-form-select v-model="selectedautor" class="mb-3 form-control">
             <b-form-select-option :value="null">Sin order</b-form-select-option>
             <b-form-select-option value="1">Ascendente</b-form-select-option>
             <b-form-select-option value="2">Descendente </b-form-select-option>
@@ -75,9 +75,10 @@
         <b-col class="text-center px-3" cols="12" sm="12" md="6" lg="6" xl="6">
           <label>Agregar nuevo libro</label>
           <br>
-          <b-button class="px-5" pill variant="outline-primary">+</b-button>
+          <b-button class="px-5" pill variant="outline-primary" @click="showModal()">+</b-button>
         </b-col>
       </b-row>
+
 
       <b-row>
         <b-col cols="12" sm="12" md="8" lg="8" xl="8">
@@ -88,8 +89,6 @@
                 <b-card-title>{{ book.name }}</b-card-title>
                 <b-card-sub-title>{{ book.autor }}</b-card-sub-title>
                 <b-card-text>{{ book.publishDate }}</b-card-text>
-                <b-button @click="openUpdateModal(book)" variant="primary">Actualizar</b-button>
-                <b-button @click="deleteBook(book.id)" variant="danger">Eliminar</b-button>
               </b-card>
             </b-col>
           </b-row>
@@ -127,6 +126,7 @@ export default {
   data() {
     return {
       data: null,
+      filteredData: null,
       selectedBook: null,
       book: {
         name: "",
@@ -140,15 +140,26 @@ export default {
   },
   computed: {},
   methods: {
+    // Métodos de filtrados
+    sortByAuthor() {
+      this.filteredData = this.data.slice().sort((a, b) => a.autor.localeCompare(b.autor));
+    },
+    sortByDate() {
+      this.filteredData = this.data.slice().sort((a, b) => new Date(a.publishDate) - new Date(b.publishDate));
+    },
+    filterByImage() {
+      this.filteredData = this.data.filter(book => book.cover !== null && book.cover !== '');
+    },
     showModal() {
       this.show = true;
+      this.$bvModal.show("modal-get");
+      console.log('Entra cas');
     },
     fetchData() {
       axios
         .get("http://localhost:8080/api/books/")
         .then((response) => {
           this.data = response.data.data;
-          console.log(response);
         })
         .catch((error) => {
           console.error("Error al obtener datos de la API", error);
@@ -195,6 +206,15 @@ export default {
 </script>
 
 <style>
+.filter-buttons {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-buttons > * {
+  margin-right: 10px;
+}
+
 .bodybuttons {
   text-align: center;
   padding-top: 20px;

@@ -29,6 +29,7 @@ public class BookController {
     }
     @PostMapping("/")
     public ResponseEntity<CustomResponse<Books>> saveMovies(@RequestBody BookDTO dto){
+        System.out.println(dto.getPublicationDate()+"aaaa");
         return  new ResponseEntity<>(
                 this.services.saveBook(dto.newBook()),
                 HttpStatus.OK

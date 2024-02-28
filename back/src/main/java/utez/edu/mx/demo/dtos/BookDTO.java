@@ -20,15 +20,16 @@ public class BookDTO {
 
     private String image;
 
-    private Date publication_date;
+    private Date publicationDate;
 
     public Books newBook(){
+        System.out.println(getPublicationDate()+"DTO");
         return new Books(
                  null,
                 getName(),
                 getAutor(),
                 getImage(),
-                getPublication_date()
+                getPublicationDate()
         );
     }
 
@@ -50,7 +51,7 @@ public class BookDTO {
                 getName(),
                 getAutor(),
                 getImage(),
-                getPublication_date()
+                getPublicationDate()
         );
     }
 }

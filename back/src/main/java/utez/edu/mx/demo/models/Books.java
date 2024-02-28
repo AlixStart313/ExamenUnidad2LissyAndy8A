@@ -24,6 +24,7 @@ public class Books {
     private String autor;
 
     @Column(nullable = true)
+    @Lob
     private String image;
 
     @Column(nullable = false)
