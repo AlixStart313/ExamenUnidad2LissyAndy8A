@@ -9,9 +9,9 @@ public interface BooksRepository extends JpaRepository<Books,Long> {
     List<Books> findBooksByOrderByAutorDesc();
     List<Books> findBooksByOrderByAutorAsc();
 
-    List<Books> findBooksByOrderByPublication_dateDesc();
+    List<Books> findBooksByOrderByPublicationDateDesc();
 
-    List<Books> findBooksByOrderByPublication_dateAsc();
+    List<Books> findBooksByOrderByPublicationDateAsc();
 
     List<Books> findBooksByOrderByImageAsc();
     List<Books> findBooksByOrderByImageDesc();

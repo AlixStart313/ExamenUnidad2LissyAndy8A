@@ -4,6 +4,7 @@ package utez.edu.mx.demo.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import utez.edu.mx.demo.models.Books;
 
 import java.util.Date;
@@ -24,7 +25,7 @@ public class BookDTO {
     public Books newBook(){
         Date today = new Date();
         return new Books(
-                 0L,
+                 null,
                 getName(),
                 getAutor(),
                 getImage(),
@@ -44,6 +45,7 @@ public class BookDTO {
     }
 
     public Books updateBook(){
+        Date today = new Date();
         return new Books(
                 getId(),
                 getName(),
