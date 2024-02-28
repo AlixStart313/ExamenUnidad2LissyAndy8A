@@ -1,7 +1,14 @@
 <template>
   <div>
+    <!-- Botones de filtrado -->
+    <div class="filter-buttons">
+      <b-button @click="sortByAuthor" variant="outline-primary">Ordenar por Autor</b-button>
+      <b-button @click="sortByDate" variant="outline-primary">Ordenar por Fecha</b-button>
+      <b-button @click="filterByImage" variant="outline-primary">Con Imagen</b-button>
+    </div>
+
     <!-- Carrusel de libros -->
-    <div v-if="data && data.length > 0">
+    <div v-if="filteredData && filteredData.length > 0">
       <b-carousel
         style="text-shadow: 0px 0px 2px #000"
         indicators
@@ -9,7 +16,7 @@
         img-height="500"
       >
         <b-carousel-slide
-          v-for="(book, index) in data"
+          v-for="(book, index) in filteredData"
           :key="index"
           :caption="book.name"
           :img-src="base64ToImage(book.cover)"
@@ -32,9 +39,9 @@
       </div>
     </div>
 
-    <!-- Lista de libros -->
+    <!-- Lista de libros filtrada -->
     <div class="d-flex flex-wrap justify-content-around">
-      <b-col v-for="(book, index) in data" :key="index" class="d-flex d-fixed">
+      <b-col v-for="(book, index) in filteredData" :key="index" class="d-flex d-fixed">
         <b-card style="height: 100%; width: auto">
           <b-card-img :src="base64ToImage(book.cover)"></b-card-img>
           <b-card-title>{{ book.name }}</b-card-title>
@@ -56,11 +63,12 @@ import ModalGet from "./ModalGet.vue";
 import axios from "axios";
 
 export default {
-  components: { ModalGet},
+  components: { ModalGet },
   name: "Books",
   data() {
     return {
       data: null,
+      filteredData: null,
       selectedBook: null,
       book: {
         name: "",
@@ -71,17 +79,24 @@ export default {
   },
   computed: {},
   methods: {
+    // Métodos de filtrados
+    sortByAuthor() {
+      this.filteredData = this.data.slice().sort((a, b) => a.autor.localeCompare(b.autor));
+    },
+    sortByDate() {
+      this.filteredData = this.data.slice().sort((a, b) => new Date(a.publishDate) - new Date(b.publishDate));
+    },
+    filterByImage() {
+      this.filteredData = this.data.filter(book => book.cover !== null && book.cover !== '');
+    },
     showModal() {
       this.show = true;
     },
     base64ToImage(base64String) {
-      // Extraer el tipo de la imagen desde la cadena Base64
       const type = base64String.substring(
         "data:image/".length,
         base64String.indexOf(";base64")
       );
-
-      // Crear un blob desde la cadena Base64
       const byteCharacters = atob(base64String.split(",")[1]);
       const byteArrays = [];
       for (let offset = 0; offset < byteCharacters.length; offset += 512) {
@@ -94,11 +109,7 @@ export default {
         byteArrays.push(byteArray);
       }
       const blob = new Blob(byteArrays, { type: type });
-
-      // Crear una URL para la imagen
       const url = URL.createObjectURL(blob);
-
-      // Retornar la URL de la imagen
       return url;
     },
     fetchData() {
@@ -151,6 +162,15 @@ export default {
 </script>
 
 <style>
+.filter-buttons {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.filter-buttons > * {
+  margin-right: 10px;
+}
+
 .bodybuttons {
   text-align: center;
   padding-top: 20px;
