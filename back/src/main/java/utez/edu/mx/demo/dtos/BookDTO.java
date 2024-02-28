@@ -23,13 +23,12 @@ public class BookDTO {
     private Date publication_date;
 
     public Books newBook(){
-        Date today = new Date();
         return new Books(
                  null,
                 getName(),
                 getAutor(),
                 getImage(),
-                today
+                getPublication_date()
         );
     }
 
