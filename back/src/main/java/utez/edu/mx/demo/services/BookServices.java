@@ -29,9 +29,9 @@ public class BookServices {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public CustomResponse<Books> saveBook(BookDTO dto){
+    public CustomResponse<Books> saveBook(Books dto){
         return new CustomResponse<Books>(
-                this.repository.saveAndFlush(dto.newBook()),
+                this.repository.saveAndFlush(dto),
                 false,
                 200,
                 "ok"
@@ -39,9 +39,9 @@ public class BookServices {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public CustomResponse<Books> updateBook(BookDTO dto){
+    public CustomResponse<Books> updateBook(Books dto){
         return new CustomResponse<Books>(
-                this.repository.saveAndFlush(dto.updateBook()),
+                this.repository.saveAndFlush(dto),
                 false,
                 200,
                 "ok"
@@ -49,8 +49,8 @@ public class BookServices {
     }
 
     @Transactional(rollbackFor = {SQLException.class})
-    public CustomResponse<Books> patcheBook(BookDTO dto){
-        this.repository.delete(dto.deleteBook());
+    public CustomResponse<Books> deleteBook(Books dto){
+        this.repository.delete(dto);
         return new CustomResponse<>(
                 null,
                 false,

@@ -23,7 +23,7 @@ public class Books {
     @Column(nullable = false)
     private String autor;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String image;
 
     @Column(nullable = false)
