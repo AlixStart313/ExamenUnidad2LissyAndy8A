@@ -1,140 +1,178 @@
 <template>
   <div>
-    <b-container>
-      <b-row>
-                <b-col>
-                    <h1>Libros</h1>
-                  </b-col>
-                <b-col>
-                    <b-button variant="primary" @click="showModal('register')">Registrar libro</b-button>
-                  </b-col>
-              </b-row>
-            <b-row>
-                <b-col>
-                    <draggable v-model="books" :options="{ group: 'books' }" @end="onDragEnd">
-                        <b-card v-for="book in books" :key="book.id /" :img-src="book.image" img-alt="Portada del libro"
-              img-top>
-                            <h4>{{ book.name / }}</h4>
-                            <p>{{ book.author / }}</p>
-                            <p>{{ book.publication_date }}</p>
-                            <b-button variant="danger" @click="deleteBook(book.id /)">Eliminar</b-button>
-                            <b-button variant="info" @click="showModal('update', book)">Actualizar</b-button>
-                          </b-card>
-                      </draggable>
-                  </b-col>
-              </b-row>
-            <b-row>
-                <b-col>
-                    <h2>Carousel de libros</h2>
-                    <b-carousel id="carousel-1" v-model="slide" :interval="4000" controls indicators background="#ababab"
-            img-width="1024" img-height="480">
-                        <b-carousel-slide v-for="book in books" :key="book.id /" :img-src="book.image"
-              :caption="book.name /"></b-carousel-slide>
-                      </b-carousel>
-                  </b-col>
-              </b-row>
-          </b-container>
-        <b-modal :id="modal.id /" :title="modal.title" @ok="modal.action">
-            <b-form @submit.prevent="modal.action">
-                <b-form-group label="Nombre del libro" label-for="title">
-                    <b-form-input id="title" v-model="formData.name /" required></b-form-input>
-                  </b-form-group>
-                <b-form-group label="Autor" label-for="author">
-                    <b-form-input id="author" v-model="formData.author /" required></b-form-input>
-                  </b-form-group>
-                <b-form-group label="Fecha de publicación" label-for="publicationDate">
-                    <b-form-input id="publicationDate" v-model="formData.publication_date" type="date"
-            required></b-form-input>
-                  </b-form-group>
-                <b-form-group label="Imagen de portada">
-                    <b-form-file v-model="formData.image" accept="image/*"></b-form-file>
-                  </b-form-group>
-                <b-form-group label="Estado" label-for="status">
-                    <b-form-select id="status" v-model="formData.status" :options="statusOptions"
-            required></b-form-select>
-                  </b-form-group>
-              </b-form>
-          </b-modal>
-   
+    <!-- Carrusel de libros -->
+    <div v-if="data && data.length > 0">
+      <b-carousel
+        style="text-shadow: 0px 0px 2px #000"
+        indicators
+        img-width="500"
+        img-height="500"
+      >
+        <b-carousel-slide
+          v-for="(book, index) in data"
+          :key="index"
+          :caption="book.name"
+          :img-src="base64ToImage(book.cover)"
+          class="carrusel"
+        ></b-carousel-slide>
+      </b-carousel>
+    </div>
+
+    <!-- Mensaje en caso de que no haya libros -->
+    <div v-else>
+      <div class="no-books-message">
+        <p>No hay libros registrados actualmente. ¡Registra el primero!</p>
+        <b-icon icon="book" size="is-large"></b-icon>
+      </div>
+      <!-- Botón para registrar libro -->
+      <div class="bodybuttons">
+        <b-button v-b-modal.modal-get class="btnadd">
+          <b-icon icon="plus"></b-icon>
+        </b-button>
+      </div>
+    </div>
+
+    <!-- Lista de libros -->
+    <div class="d-flex flex-wrap justify-content-around">
+      <b-col v-for="(book, index) in data" :key="index" class="d-flex d-fixed">
+        <b-card style="height: 100%; width: auto">
+          <b-card-img :src="base64ToImage(book.cover)"></b-card-img>
+          <b-card-title>{{ book.name }}</b-card-title>
+          <b-card-sub-title>{{ book.autor }}</b-card-sub-title>
+          <b-card-text>{{ book.publishDate }}</b-card-text>
+          <b-button @click="openUpdateModal(book)" variant="primary">Actualizar</b-button>
+          <b-button @click="deleteBook(book.id)" variant="danger">Eliminar</b-button>
+        </b-card>
+      </b-col>
+    </div>
+
+    <!-- Modales -->
+    <ModalGet @book-updated="fetchData" />
   </div>
 </template>
-  
+
 <script>
-import draggable from 'vuedraggable';
+import ModalGet from "./ModalGet.vue";
 import axios from "axios";
 
 export default {
-  components: {
-    draggable,
-  },
+  components: { ModalGet, ModalU },
+  name: "Books",
   data() {
     return {
-      books: [],
-      modal: {
-        id: 'modal-book',
-        title: '',
-        action: null,
+      data: null,
+      selectedBook: null,
+      book: {
+        name: "",
+        autor: "",
+        publishDate: null,
       },
-      slide: 0,
-      formData: {
-        name: '',
-        author: '',
-        publication_date: '',
-        image: null,
-        status: '',
-      },
-      statusOptions: ['Activo', 'Inactivo'],
     };
   },
+  computed: {},
   methods: {
-    fetchBooks() {
-      this.books = [
-        { id: 1, name: 'Libro 1', author: 'Autor 1', publication_date: '2023-01-01', image: 'imagen1.jpg', status: 'Activo' },
-        { id: 2, name: 'Libro 2', author: 'Autor 2', publication_date: '2023-02-01', image: 'imagen2.jpg', status: 'Inactivo' },
-      ];
+    showModal() {
+      this.show = true;
     },
-    registerBook() {
-      console.log('Registrando libro:', this.formData);
-    },
-    updateBook(book) {
-      console.log('Actualizando libro:', this.formData);
-    },
-    deleteBook(id) {
-      console.log('Eliminando libro con ID:', id);
-    },
-    showModal(action, book = null) {
-      switch (action) {
-        case 'register':
-          this.modal.title = 'Registrar libro';
-          this.modal.action = this.registerBook;
-          this.resetFormData();
-          break;
-        case 'update':
-          this.modal.title = 'Actualizar libro';
-          this.modal.action = () => this.updateBook(book);
-          this.formData = { ...book };
-          break;
+    base64ToImage(base64String) {
+      // Extraer el tipo de la imagen desde la cadena Base64
+      const type = base64String.substring(
+        "data:image/".length,
+        base64String.indexOf(";base64")
+      );
+
+      // Crear un blob desde la cadena Base64
+      const byteCharacters = atob(base64String.split(",")[1]);
+      const byteArrays = [];
+      for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+        const slice = byteCharacters.slice(offset, offset + 512);
+        const byteNumbers = new Array(slice.length);
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
       }
-      this.$bvModal.show(this.modal.id /);
+      const blob = new Blob(byteArrays, { type: type });
+
+      // Crear una URL para la imagen
+      const url = URL.createObjectURL(blob);
+
+      // Retornar la URL de la imagen
+      return url;
     },
-    resetFormData() {
-      this.formData = {
-        name: '',
-        author: '',
-        publication_date: '',
-        image: null,
-        status: '',
-      };
+    fetchData() {
+      axios
+        .get("http://localhost:8080/api-books/")
+        .then((response) => {
+          this.data = response.data.data;
+        })
+        .catch((error) => {
+          console.error("Error al obtener datos de la API", error);
+        });
     },
-    onDragEnd(event) {
-      if (!event.newIndex) {
-        this.deleteBook(event.item.id /);
+    filterMovies() {
+      this.currentPage = 1;
+      this.fetchData();
+    },
+    openUpdateModal(book) {
+      this.selectedBook = book;
+      this.$refs.ModalUpdate.show();
+    },
+    async deleteBook(id) {
+      const confirmed = await Swal.fire({
+        title: "¿Estás seguro de eliminar el libro?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#008c6f',
+        cancelButtonColor: '#e11c24',
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: 'Cancelar',
+      });
+
+      if (confirmed.isConfirmed) {
+        try {
+          const response = await axios.patch(`http://localhost:8080/api-book/libro/${id}`);
+          if (response.data.error) {
+            console.error(response.data.message);
+          } else {
+            this.fetchData();
+          }
+        } catch (error) {
+          console.error("Error interno", error);
+        }
       }
     },
   },
-  created() {
-    this.fetchBooks();
+  mounted() {
+    this.fetchData();
   },
 };
 </script>
-  
+
+<style>
+.bodybuttons {
+  text-align: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.btnadd {
+  background-color: #089779;
+  border-radius: 50%;
+  padding: 15px 20px;
+}
+
+.no-books-message {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.no-books-message p {
+  margin-bottom: 10px;
+}
+
+.no-books-message b-icon {
+  font-size: 3rem;
+}
+</style>

@@ -22,11 +22,6 @@ const router = new VueRouter({
             name: "BookCard",
             component:() => import('../components/BookCard.vue')
         },
-        {
-            path:"/Libros",
-            name: "Libros",
-            component:() => import('../components/Libros.vue')
-        },
 
     ]
 })

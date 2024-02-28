@@ -7,10 +7,6 @@
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ml-auto">
                             <li class="nav-item">
-                                <router-link to="/Libros" class="nav-link text-light">Lista de
-                                    Libros</router-link>
-                            </li>
-                            <li class="nav-item">
                                 <router-link to="/BookCard" class="nav-link text-light">Book Card</router-link>
                             </li>
                         </ul>

@@ -11,7 +11,9 @@
     "bootstrap": "^5.3.3",
     "bootstrap-vue": "^2.23.1",
     "vue": "^2.7.16",
+    "vue-draggable": "^2.0.6",
     "vue-router": "^2.8.1",
+    "vuedraggable": "^2.24.3",
     "vuelidate": "^0.7.7"
   },
   "devDependencies": {
