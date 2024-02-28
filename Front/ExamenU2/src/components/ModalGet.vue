@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-modal hide-footer hide-header centered id="modal-get">
+    <b-modal hide-footer hide-header centered id="modal-get" size="lg">
       <header class="text-center border-bottom">
-        <p style="font-family: cabin">Registrar Libro</p>
+        <p style="font-size: 20px;">Registrar Libro</p>
       </header>
 
       <main>
@@ -62,6 +62,7 @@
           Cancelar
         </button>
         <button
+          :disabled="!formValid"
           class="btn m-1 success"
           @click="saveBook"
           id="savebook"
@@ -88,7 +89,15 @@ export default {
       },
     };
   },
-
+  computed: {
+    formValid() {
+      return (
+        this.book.name !== "" &&
+        this.book.autor !== "" &&
+        this.book.publicationDate !== null
+      );
+    },
+  },
   methods: {
     onClose() {
       this.$bvModal.hide("modal-get");
@@ -120,10 +129,6 @@ export default {
     },
     async saveBook() {
       try {
-        // Aquí puedes realizar la solicitud HTTP para guardar el libro
-        // Por ejemplo:
-        // await axios.post("http://localhost:8080/api-book/", this.book);
-        // Luego, cierra el modal y actualiza la lista de libros
         this.onClose();
         this.$emit("book-updated");
       } catch (error) {
@@ -137,13 +142,13 @@ export default {
 <style>
 .success {
   font-family: Cabin;
-  background-color: #009475;
+  background-color: #008e57;
   color: white;
 }
 
 .cancel {
   font-family: Cabin;
-  background-color: #ffce50;
-  color: black;
+  background-color: #d32f2f;
+  color: white;
 }
 </style>

@@ -56,7 +56,7 @@ import ModalGet from "./ModalGet.vue";
 import axios from "axios";
 
 export default {
-  components: { ModalGet, ModalU },
+  components: { ModalGet},
   name: "Books",
   data() {
     return {
